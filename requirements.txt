@@ -1,7 +1,3 @@
 opencv-python>=4.5.0
-numpy>=1.19.0
-easyocr>=1.6.0
-python-bidi>=0.4.2
-arabic-reshaper>=2.1.0
-Pillow>=8.0.0
-argparse
+fast_alpr
+onnxruntime
