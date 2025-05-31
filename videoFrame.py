@@ -1,6 +1,15 @@
 # this file detects license plates and records there number 
 import cv2 as cv
 from fast_alpr import ALPR
+import sys
+
+#get file name from command line
+
+if len(sys.argv) > 1:
+    file_name = sys.argv[1]
+else: 
+    file_name = 'data/dash1.mp4'
+
 
 # You can also initialize the ALPR with custom plate detection and OCR models.
 
@@ -8,25 +17,19 @@ alpr = ALPR(
     detector_model="yolo-v9-t-384-license-plate-end2end",
     ocr_model="global-plates-mobile-vit-v2-model",
 )
-"""
-# The "assets/test_image.png" can be found in repo root dit
-# You can also pass a NumPy array containing cropped plate image
-alpr_results = alpr.predict("./sample.mp4")
-print(alpr_results)
-"""
 
 ### get to work with video files
 
 # Open the video file (replace with your video file path)
-video_path = 'data/sample.mp4'
+video_path = file_name
 cap = cv.VideoCapture(video_path)
 
 # Create a VideoWriter object (optional, if you want to save the output)
-"""
+
 output_path = 'output_video.mp4'
 fourcc = cv.VideoWriter_fourcc(*'mp4v')
 out = cv.VideoWriter(output_path, fourcc, 30.0, (640, 480))  # Adjust frame size if necessary
-"""
+
 # Frame skipping factor (adjust as needed for performance)
 frame_skip = 3  # Skip every 3rd frame
 frame_count = 0
@@ -43,11 +46,15 @@ while cap.isOpened():
 
     # Resize the frame (optional, adjust size as needed)
     frame = cv.resize(frame, (640, 480))  # Resize to 640x480
+    
+
+    # Draw predictions on the image
+    annotated_frame = alpr.draw_predictions(frame)   
 
     # Make predictions on the current frame
     #results = model.predict(source=frame)
-    alpr_results = alpr.predict(frame)
-    
+    #alpr_results = alpr.predict(frame)
+    """
     #print(alpr_results)
     if len(alpr_results) !=0:
         print(alpr_results[0].ocr.text, alpr_results[0].ocr.confidence)
@@ -56,7 +63,7 @@ while cap.isOpened():
        
 
     # Iterate over results and draw predictions
-    """
+    
     for result in alpr_results:
         boxes = result.boxes  # Get the boxes predicted by the model
         for box in boxes:
@@ -109,11 +116,11 @@ while cap.isOpened():
                 print(f"OCR Error: {e}")
                 pass
                 """
-            
+         
             
             
     # Show the frame with detections (show while video progresses)
-    """
+    
     cv.imshow('Detections', frame)
 
     # Write the frame to the output video (optional)
@@ -123,7 +130,7 @@ while cap.isOpened():
         break  # Exit loop if 'q' is pressed
 
     frame_count += 1  # Increment frame count
-    """
+    
 # Release resources
 
 cap.release()
