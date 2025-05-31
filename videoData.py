@@ -2,7 +2,6 @@
 import cv2 as cv
 from fast_alpr import ALPR
 from dataclasses import dataclass
-from typing import List
 import sys
 
 # class to store data
@@ -72,9 +71,9 @@ while cap.isOpened():
             resultsArr.append(
                 Result(
                     plate_number=alpr_results[0].ocr.text,
-                    confidence=alpr_results[0].ocr.confidence,
+                    confidence=round(alpr_results[0].ocr.confidence, 3),
                     video_time=timeElapsed,
-                    file_name="new.mp4"
+                    file_name=file_name
                 )
                 )
         checkArr.append(alpr_results[0].ocr.text)
@@ -91,7 +90,10 @@ while cap.isOpened():
 
     frame_count += 1  # Increment frame count
     """
+# print results list
+    
 print(resultsArr)
+
 # Release resources
 
 cap.release()
