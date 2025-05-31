@@ -3,6 +3,7 @@ import cv2 as cv
 from fast_alpr import ALPR
 from dataclasses import dataclass
 from typing import List
+import sys
 
 # class to store data
 
@@ -16,6 +17,15 @@ class Result:
 resultsArr = []
 checkArr = []
 
+
+#get file name from command line
+
+if len(sys.argv) > 1:
+    file_name = sys.argv[1]
+else: 
+    file_name = 'data/dash1.mp4'
+
+
 # You can also initialize the ALPR with custom plate detection and OCR models.
 
 alpr = ALPR(
@@ -26,7 +36,7 @@ alpr = ALPR(
 ### get to work with video files
 
 # Open the video file (replace with your video file path)
-video_path = 'data/dash4.mp4'
+video_path = file_name
 cap = cv.VideoCapture(video_path)
 
 # Frame skipping factor (adjust as needed for performance)
