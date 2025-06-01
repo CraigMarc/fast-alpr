@@ -1,3 +1,5 @@
 opencv-python>=4.5.0
 fast_alpr
 onnxruntime
+pytesseract
+easyocr>=1.6.0
