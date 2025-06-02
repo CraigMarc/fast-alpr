@@ -8,9 +8,9 @@ alpr = ALPR(
 )
 
 # Load the image
-image_path = "data/image1.jpeg"
+image_path = "data/test.png"
 frame = cv2.imread(image_path)
-
+frame = cv2.resize(frame, (1366, 768))  # Resize to 640x480
 # Draw predictions on the image
 annotated_frame = alpr.draw_predictions(frame)
 

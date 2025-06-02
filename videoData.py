@@ -53,7 +53,7 @@ while cap.isOpened():
         continue  # Skip processing this frame
 
     # Resize the frame (optional, adjust size as needed)
-    frame = cv.resize(frame, (640, 480))  # Resize to 640x480
+    frame = cv.resize(frame, (1366, 768))  # Resize to 640x480
 
     # Make predictions on the current frame
     #results = model.predict(source=frame)
@@ -67,7 +67,7 @@ while cap.isOpened():
         
         # put results into object
         
-        if alpr_results[0].ocr.text not in checkArr and alpr_results[0].ocr.confidence > 0.8:
+        if alpr_results[0].ocr.text not in checkArr and alpr_results[0].ocr.confidence >= 0.9:
             resultsArr.append(
                 Result(
                     plate_number=alpr_results[0].ocr.text,

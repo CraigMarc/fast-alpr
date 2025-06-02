@@ -3,3 +3,4 @@ fast_alpr
 onnxruntime
 pytesseract
 easyocr>=1.6.0
+Pillow>=8.0.0

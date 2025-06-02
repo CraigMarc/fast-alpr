@@ -44,22 +44,10 @@ class EzOCR(BaseOCR):
         if cropped_plate is None:
             return None
         # You can change 'eng' to the appropriate language code as needed
-        """
-        data = pytesseract.image_to_data(
-            cropped_plate,
-            lang="eng",
-            config="--oem 3 --psm 6",
-            output_type=pytesseract.Output.DICT,
-        )
-        plate_text = " ".join(data["text"]).strip()
-        plate_text = re.sub(r"[^A-Za-z0-9]", "", plate_text)
-        avg_confidence = mean(conf for conf in data["conf"] if conf > 0) / 100.0
-        return OcrResult(text=plate_text, confidence=avg_confidence)
-        """
-    
-        # Convert to format compatible with EasyOCR
-        plate_image = cv.cvtColor(cropped_plate, cv.COLOR_BGR2RGB)
-        plate_array = np.array(plate_image)
+       
+        # Convert to format compatible with EasyOCR (not needed fast alrp already processes)
+        #plate_image = cv.cvtColor(cropped_plate, cv.COLOR_BGR2RGB)
+       
 
         # Use EasyOCR to read text from plate
         plate_number = reader.readtext(cropped_plate)
