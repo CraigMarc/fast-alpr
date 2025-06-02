@@ -77,6 +77,8 @@ alpr = ALPR(
 # Open the video file (replace with your video file path)
 video_path = file_name
 cap = cv.VideoCapture(video_path)
+video_height = cap.get(cv.CAP_PROP_FRAME_HEIGHT)
+video_width = cap.get(cv.CAP_PROP_FRAME_WIDTH)
 
 # Frame skipping factor (adjust as needed for performance)
 frame_skip = 3  # Skip every 3rd frame
@@ -93,7 +95,8 @@ while cap.isOpened():
         continue  # Skip processing this frame
 
     # Resize the frame (optional, adjust size as needed)
-    frame = cv.resize(frame, (640, 480))  # Resize to 640x480
+    frame = cv.resize(frame, (1366, 768))  # Resize to 640x480
+     #frame = cv.resize(frame, (video_width, video_height))  # auto resize ******************
 
     # Make predictions on the current frame
     #results = model.predict(source=frame)
