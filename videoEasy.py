@@ -11,7 +11,8 @@ from fast_alpr.alpr import ALPR, BaseOCR, OcrResult
 # Initialize EasyOCR reader
 reader = easyocr.Reader(['en'], gpu=False)
 
-# class to store data
+resultsArr = []
+checkArr = []
 
 @dataclass
 class Result:
@@ -20,8 +21,6 @@ class Result:
     video_time: float
     file_name: str
 
-resultsArr = []
-checkArr = []
 
 
 #get file name from command line
@@ -111,7 +110,7 @@ while cap.isOpened():
         # put results into object
         
         if alpr_results[0].ocr.text not in checkArr and alpr_results[0].ocr.confidence > 0.8:
-            resultsArr.append(
+           resultsArr.append(
                 Result(
                     plate_number=alpr_results[0].ocr.text,
                     confidence=round(alpr_results[0].ocr.confidence, 3),
@@ -119,6 +118,7 @@ while cap.isOpened():
                     file_name=file_name
                 )
                 )
+
         checkArr.append(alpr_results[0].ocr.text)
 
     # Show the frame with detections (show while video progresses)

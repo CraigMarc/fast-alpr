@@ -4,7 +4,8 @@ from fast_alpr import ALPR
 from dataclasses import dataclass
 import sys
 
-# class to store data
+resultsArr = []
+checkArr = []
 
 @dataclass
 class Result:
@@ -13,8 +14,6 @@ class Result:
     video_time: float
     file_name: str
 
-resultsArr = []
-checkArr = []
 
 
 #get file name from command line
@@ -69,16 +68,25 @@ while cap.isOpened():
         print(timeElapsed)
         
         # put results into object
-        
+
         if alpr_results[0].ocr.text not in checkArr and alpr_results[0].ocr.confidence >= 0.9:
-            resultsArr.append(
+          data = {
+                "plate_number": alpr_results[0].ocr.text,
+                "confidence": round(alpr_results[0].ocr.confidence, 3),
+                "video_time": timeElapsed,
+                "file_name": file_name
+          }
+          resultsArr.append(data)
+          """
+          resultsArr.append(
                 Result(
                     plate_number=alpr_results[0].ocr.text,
                     confidence=round(alpr_results[0].ocr.confidence, 3),
                     video_time=timeElapsed,
                     file_name=file_name
                 )
-                )
+                )"""
+
         checkArr.append(alpr_results[0].ocr.text)
 
     # Show the frame with detections (show while video progresses)
@@ -94,8 +102,10 @@ while cap.isOpened():
     frame_count += 1  # Increment frame count
     """
 # print results list
-    
+
 print(resultsArr)
+    
+print(resultsArr[0]["plate_number"])
 
 # Release resources
 
