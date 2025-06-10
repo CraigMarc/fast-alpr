@@ -65,8 +65,8 @@ while cap.isOpened():
         for x in alpr_results:
             if x.ocr.text not in checkArr and x.ocr.confidence >= 0.9:
                 data = {
-                "plate_number": alpr_results[0].ocr.text,
-                "confidence": round(alpr_results[0].ocr.confidence, 3),
+                "plate_number": x.ocr.text,
+                "confidence": round(x.ocr.confidence, 3),
                 "video_time": timeElapsed,
                 "file_name": file_name
                 }
@@ -74,7 +74,7 @@ while cap.isOpened():
 
           # when was appending data to object changed to a dictionary
         
-            checkArr.append(alpr_results[0].ocr.text)
+            checkArr.append(x.ocr.text)
 
     # Show the frame with detections (show while video progresses)
     """
