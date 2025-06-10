@@ -7,14 +7,6 @@ import sys
 resultsArr = []
 checkArr = []
 
-@dataclass
-class Result:
-    plate_number: str
-    confidence: float
-    video_time: float
-    file_name: str
-
-
 
 #get file name from command line
 
@@ -67,27 +59,22 @@ while cap.isOpened():
         print(alpr_results[0].ocr.text, alpr_results[0].ocr.confidence)
         print(timeElapsed)
         
-        # put results into object
+       
+        # loop through results and add to the dictionary
 
-        if alpr_results[0].ocr.text not in checkArr and alpr_results[0].ocr.confidence >= 0.9:
-          data = {
+        for x in alpr_results:
+            if x.ocr.text not in checkArr and x.ocr.confidence >= 0.9:
+                data = {
                 "plate_number": alpr_results[0].ocr.text,
                 "confidence": round(alpr_results[0].ocr.confidence, 3),
                 "video_time": timeElapsed,
                 "file_name": file_name
-          }
-          resultsArr.append(data)
-          """
-          resultsArr.append(
-                Result(
-                    plate_number=alpr_results[0].ocr.text,
-                    confidence=round(alpr_results[0].ocr.confidence, 3),
-                    video_time=timeElapsed,
-                    file_name=file_name
-                )
-                )"""
+                }
+                resultsArr.append(data)
 
-        checkArr.append(alpr_results[0].ocr.text)
+          # when was appending data to object changed to a dictionary
+        
+            checkArr.append(alpr_results[0].ocr.text)
 
     # Show the frame with detections (show while video progresses)
     """
@@ -105,7 +92,6 @@ while cap.isOpened():
 
 print(resultsArr)
     
-print(resultsArr[0]["plate_number"])
 
 # Release resources
 
