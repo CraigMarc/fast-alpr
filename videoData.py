@@ -17,11 +17,28 @@ else:
 
 
 # You can also initialize the ALPR with custom plate detection and OCR models.
-
+#best model
 alpr = ALPR(
     detector_model="yolo-v9-t-384-license-plate-end2end",
     ocr_model="global-plates-mobile-vit-v2-model",
 )
+"""
+# argentinian plate model
+alpr = ALPR(
+    detector_model="yolo-v9-t-384-license-plate-end2end",
+    ocr_model="argentinian-plates-cnn-model",
+)
+
+alpr = ALPR(
+    detector_model="yolo-v9-t-384-license-plate-end2end",
+    ocr_model="argentinian-plates-cnn-synth-model",
+)
+# 2nd best model
+alpr = ALPR(
+    detector_model="yolo-v9-t-384-license-plate-end2end",
+    ocr_model="european-plates-mobile-vit-v2-model",
+)"""
+
 
 ### get to work with video files
 
@@ -61,9 +78,9 @@ while cap.isOpened():
         
        
         # loop through results and add to the dictionary
-
+        
         for x in alpr_results:
-            if x.ocr.text not in checkArr and x.ocr.confidence >= 0.9:
+            if x.ocr.text not in checkArr and x.ocr.confidence >= 0.97:
                 data = {
                 "plate_number": x.ocr.text,
                 "confidence": round(x.ocr.confidence, 3),
@@ -71,10 +88,23 @@ while cap.isOpened():
                 "file_name": file_name
                 }
                 resultsArr.append(data)
-
-          # when was appending data to object changed to a dictionary
         
-            checkArr.append(x.ocr.text)
+                checkArr.append(x.ocr.text)
+        
+        # one result per frame
+        """
+        if alpr_results[0].ocr.text not in checkArr and alpr_results[0].ocr.confidence > 0.97:
+          
+            data = {
+            "plate_number": alpr_results[0].ocr.text,
+            "confidence": round(alpr_results[0].ocr.confidence, 3),
+            "video_time": timeElapsed,
+            "file_name": file_name
+            }
+                
+            resultsArr.append(data)
+
+            checkArr.append(alpr_results[0].ocr.text)"""
 
     # Show the frame with detections (show while video progresses)
     """

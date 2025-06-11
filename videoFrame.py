@@ -18,6 +18,7 @@ alpr = ALPR(
     ocr_model="global-plates-mobile-vit-v2-model",
 )
 
+
 ### get to work with video files
 
 # Open the video file (replace with your video file path)
