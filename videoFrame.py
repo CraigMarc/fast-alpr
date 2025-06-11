@@ -3,6 +3,7 @@ import cv2 as cv
 from fast_alpr import ALPR
 import sys
 
+
 #get file name from command line
 
 if len(sys.argv) > 1:

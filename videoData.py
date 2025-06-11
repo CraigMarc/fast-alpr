@@ -3,6 +3,7 @@ import cv2 as cv
 from fast_alpr import ALPR
 from dataclasses import dataclass
 import sys
+import csv
 
 resultsArr = []
 checkArr = []
@@ -80,7 +81,7 @@ while cap.isOpened():
         # loop through results and add to the dictionary
         
         for x in alpr_results:
-            if x.ocr.text not in checkArr and x.ocr.confidence >= 0.97:
+            if x.ocr.text not in checkArr and x.ocr.confidence >= 0.9:
                 data = {
                 "plate_number": x.ocr.text,
                 "confidence": round(x.ocr.confidence, 3),
@@ -121,6 +122,15 @@ while cap.isOpened():
 # print results list
 
 print(resultsArr)
+
+#save data to a csv file
+# change a to w to start new file
+with open('spreadsheet.csv', 'a', newline='') as csvfile:
+    fieldnames = ['plate_number', 'confidence', 'video_time', 'file_name']
+    writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+    #unquote for headers to be written
+    #writer.writeheader()
+    writer.writerows(resultsArr)
     
 
 # Release resources
