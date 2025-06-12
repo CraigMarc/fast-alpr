@@ -5,6 +5,7 @@ from dataclasses import dataclass
 import sys
 import csv
 import os
+import time
 
 
 
@@ -46,6 +47,14 @@ for val in sub_directories:
 
         resultsArr = []
         checkArr = []
+
+        # get creation time of video file
+
+        ti_m = os.path.getmtime(whole_path)
+
+        # Converting the time in seconds to a timestamp
+
+        creation_time = time.ctime(ti_m)
        
 
         ### get to work with video files
@@ -94,7 +103,8 @@ for val in sub_directories:
                         "plate_number": x.ocr.text,
                         "confidence": round(x.ocr.confidence, 3),
                         "video_time": timeElapsed,
-                        "file_name": filename
+                        "file_name": filename,
+                        "creation_time": creation_time
                         }
                         resultsArr.append(data)
                 
@@ -121,7 +131,7 @@ for val in sub_directories:
         #save data to a csv file
         # change a to w to start new file a to append to end of current file
         with open('spreadsheet_batch.csv', 'a', newline='') as csvfile:
-            fieldnames = ['plate_number', 'confidence', 'video_time', 'file_name']
+            fieldnames = ['plate_number', 'confidence', 'video_time', 'file_name', 'creation_time']
             writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
             #unquote for headers to be written
             #writer.writeheader()

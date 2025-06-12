@@ -4,6 +4,8 @@ from fast_alpr import ALPR
 from dataclasses import dataclass
 import sys
 import csv
+import os
+import time
 
 resultsArr = []
 checkArr = []
@@ -15,6 +17,15 @@ if len(sys.argv) > 1:
     file_name = sys.argv[1]
 else: 
     file_name = 'data/dash1.mp4'
+
+# get video creation time
+
+ti_m = os.path.getmtime(file_name)
+
+# Converting the time in seconds to a timestamp
+
+creation_time = time.ctime(ti_m)
+
 
 
 # You can also initialize the ALPR with custom plate detection and OCR models.
@@ -86,7 +97,8 @@ while cap.isOpened():
                 "plate_number": x.ocr.text,
                 "confidence": round(x.ocr.confidence, 3),
                 "video_time": timeElapsed,
-                "file_name": file_name
+                "file_name": file_name,
+                "creation_time": creation_time
                 }
                 resultsArr.append(data)
         
@@ -100,7 +112,8 @@ while cap.isOpened():
             "plate_number": alpr_results[0].ocr.text,
             "confidence": round(alpr_results[0].ocr.confidence, 3),
             "video_time": timeElapsed,
-            "file_name": file_name
+            "file_name": file_name,
+            "creation_time": creation_time
             }
                 
             resultsArr.append(data)
@@ -124,9 +137,9 @@ while cap.isOpened():
 print(resultsArr)
 
 #save data to a csv file
-# change a to w to start new file
+# change a to w to start new file a to append
 with open('spreadsheet.csv', 'a', newline='') as csvfile:
-    fieldnames = ['plate_number', 'confidence', 'video_time', 'file_name']
+    fieldnames = ['plate_number', 'confidence', 'video_time', 'file_name', 'creation_time']
     writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
     #unquote for headers to be written
     #writer.writeheader()
