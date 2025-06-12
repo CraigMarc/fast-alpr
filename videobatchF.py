@@ -1,13 +1,9 @@
 import cv2 as cv
 from fast_alpr import ALPR
-from dataclasses import dataclass
 import sys
 import csv
 import os
 import time
-
-
-
 
 #get file name from command line
 
@@ -75,7 +71,7 @@ def analyze_video (whole_path, resultsArr, checkArr, filename, creation_time):
                 # loop through results and add to the dictionary
                 
                 for x in alpr_results:
-                    if x.ocr.text not in checkArr and x.ocr.confidence >= 0.9:
+                    if x.ocr.text not in checkArr and x.ocr.confidence >= 0.97:
                        
                         data = {
                         "plate_number": x.ocr.text,
@@ -157,7 +153,7 @@ def get_files():
 
             creation_time = time.ctime(ti_m)
 
-            #call analysis function
+            #call analysis function for each file
             analyze_video(whole_path, resultsArr, checkArr, filename, creation_time)
 
 # call get files to start analysis

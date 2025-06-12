@@ -104,7 +104,7 @@ for val in sub_directories:
                 # loop through results and add to the dictionary
                 
                 for x in alpr_results:
-                    if x.ocr.text not in checkArr and x.ocr.confidence >= 0.9:
+                    if x.ocr.text not in checkArr and x.ocr.confidence >= 0.97:
                        
                         data = {
                         "plate_number": x.ocr.text,
