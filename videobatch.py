@@ -1,4 +1,3 @@
-# this file detects license plates and records there number 
 import cv2 as cv
 from fast_alpr import ALPR
 from dataclasses import dataclass
@@ -68,9 +67,11 @@ for val in sub_directories:
         # Frame skipping factor (adjust as needed for performance)
         frame_skip = 3  # Skip every 3rd frame
         frame_count = 0
+        timeCount = 0
 
         while cap.isOpened():
             ret, frame = cap.read()  # Read a frame from the video
+            
             if not ret:
                 break  # Exit loop if there are no frames left
 
@@ -86,12 +87,18 @@ for val in sub_directories:
             # Make predictions on the current frame
             #results = model.predict(source=frame)
             alpr_results = alpr.predict(frame)
+            timeElapsed = round(cap.get(cv.CAP_PROP_POS_MSEC)/1000, 2)
+            timeCount = timeCount + 1
+
+            if timeCount == 30:
+                timeCount = 0
+                print("analyzing" + whole_path + " " + str(timeElapsed) + "sec")
             
             #print(alpr_results)
             if len(alpr_results) !=0:
-                timeElapsed = round(cap.get(cv.CAP_PROP_POS_MSEC)/1000, 2)
-                print(alpr_results[0].ocr.text, alpr_results[0].ocr.confidence)
-                print(timeElapsed)
+                
+                #print(alpr_results[0].ocr.text, alpr_results[0].ocr.confidence)
+                #print(timeElapsed)
                 
             
                 # loop through results and add to the dictionary
