@@ -57,8 +57,10 @@ alpr = ALPR(
 # Open the video file (replace with your video file path)
 video_path = file_name
 cap = cv.VideoCapture(video_path)
-video_height = cap.get(cv.CAP_PROP_FRAME_HEIGHT)
-video_width = cap.get(cv.CAP_PROP_FRAME_WIDTH)
+video_height = int(cap.get(cv.CAP_PROP_FRAME_HEIGHT))
+video_width = int(cap.get(cv.CAP_PROP_FRAME_WIDTH))
+print(video_height)
+print(video_width)
 
 # Frame skipping factor (adjust as needed for performance)
 frame_skip = 3  # Skip every 3rd frame
@@ -75,8 +77,9 @@ while cap.isOpened():
         continue  # Skip processing this frame
 
     # Resize the frame (optional, adjust size as needed)
-    frame = cv.resize(frame, (1366, 768))  # Resize to improve accuracy *****************
-     #frame = cv.resize(frame, (video_width, video_height))  # auto resize ******************
+    #frame = cv.resize(frame, (1366, 768))  # Resize to improve accuracy *****************
+    frame = cv.resize(frame, (video_width, video_height))  # auto resize ******************
+    
 
     # Make predictions on the current frame
     #results = model.predict(source=frame)
@@ -92,7 +95,7 @@ while cap.isOpened():
         # loop through results and add to the dictionary
         
         for x in alpr_results:
-            if x.ocr.text not in checkArr and x.ocr.confidence >= 0.9:
+            if x.ocr.text not in checkArr and x.ocr.confidence >= 0.97:
                 data = {
                 "plate_number": x.ocr.text,
                 "confidence": round(x.ocr.confidence, 3),

@@ -10,7 +10,7 @@ import time
 if len(sys.argv) > 1:
     directory = sys.argv[1]
 else: 
-    directory = r"C:\Users\Criag\Videos\dashcam_data\testbatch\DCIM"
+    directory = r"C:\Users\Criag\Videos\dashcam_data\batch1a\DCIM"
 
 
 # You can also initialize the ALPR with custom plate detection and OCR models.
@@ -28,8 +28,8 @@ def analyze_video (whole_path, resultsArr, checkArr, filename, creation_time):
         # Open the video file (replace with your video file path)
         video_path = whole_path
         cap = cv.VideoCapture(video_path)
-        video_height = cap.get(cv.CAP_PROP_FRAME_HEIGHT)
-        video_width = cap.get(cv.CAP_PROP_FRAME_WIDTH)
+        video_height = int(cap.get(cv.CAP_PROP_FRAME_HEIGHT))
+        video_width = int(cap.get(cv.CAP_PROP_FRAME_WIDTH))
 
         # Frame skipping factor (adjust as needed for performance)
         frame_skip = 3  # Skip every 3rd frame
@@ -48,8 +48,8 @@ def analyze_video (whole_path, resultsArr, checkArr, filename, creation_time):
                 continue  # Skip processing this frame
 
             # Resize the frame (optional, adjust size as needed)
-            frame = cv.resize(frame, (1366, 768))  # Resize to improve accuracy *****************
-            #frame = cv.resize(frame, (video_width, video_height))  # auto resize ******************
+            #frame = cv.resize(frame, (1280, 720))  # Resize to improve accuracy *****************
+            frame = cv.resize(frame, (video_width, video_height))  # auto resize ******************
 
             # Make predictions on the current frame
             #results = model.predict(source=frame)
@@ -59,7 +59,7 @@ def analyze_video (whole_path, resultsArr, checkArr, filename, creation_time):
 
             if timeCount == 30:
                 timeCount = 0
-                print("analyzing" + whole_path + " " + str(timeElapsed) + "sec")
+                print("analyzing:" + " " + whole_path + " " + str(timeElapsed) + "sec")
             
             #print(alpr_results)
             if len(alpr_results) !=0:
@@ -100,6 +100,7 @@ def analyze_video (whole_path, resultsArr, checkArr, filename, creation_time):
 
         # print results list
 
+        print("results:")
         print(resultsArr)
 
         #save data to a csv file
