@@ -10,7 +10,7 @@ import time
 if len(sys.argv) > 1:
     directory = sys.argv[1]
 else: 
-    directory = r"C:\Users\Criag\Videos\dashcam_data\batch1\DCIM"
+    directory = r"C:\Users\Criag\Videos\dashcam_data\testbatch2\DCIM"
 
 
 # You can also initialize the ALPR with custom plate detection and OCR models.
@@ -24,7 +24,7 @@ alpr = ALPR(
 
 def analyze_video (whole_path, resultsArr, checkArr, filename, creation_time):
     ### get to work with video files
-
+        
         # Open the video file (replace with your video file path)
         video_path = whole_path
         cap = cv.VideoCapture(video_path)
@@ -76,7 +76,9 @@ def analyze_video (whole_path, resultsArr, checkArr, filename, creation_time):
                 
                 for x in alpr_results:
                     if x.ocr.text not in checkArr and x.ocr.confidence >= 0.9:
-                       
+                        #jpg_filename = "jpeg/" + filename[:-4] + str(frame_count) + ".jpg"
+                        jpg_filename = "C:/Users/Criag/Videos/jpeg_files/" + filename[:-4] + str(frame_count) + ".jpg"
+                        cv.imwrite(jpg_filename, frame)     # save frame as JPEG file    
                         data = {
                         "plate_number": x.ocr.text,
                         "confidence": round(x.ocr.confidence, 3),
