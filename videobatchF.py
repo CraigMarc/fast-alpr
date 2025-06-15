@@ -10,7 +10,7 @@ import time
 if len(sys.argv) > 1:
     directory = sys.argv[1]
 else: 
-    directory = r"C:\Users\Criag\Videos\dashcam_data\testbatch\DCIM"
+    directory = r"C:\Users\Criag\Videos\dashcam_data\batch1\DCIM"
 
 
 # You can also initialize the ALPR with custom plate detection and OCR models.
@@ -32,15 +32,22 @@ def analyze_video (whole_path, resultsArr, checkArr, filename, creation_time):
         video_width = int(cap.get(cv.CAP_PROP_FRAME_WIDTH))
 
         # Frame skipping factor (adjust as needed for performance)
-        frame_skip = 0 # change to skip frames
+        frame_skip = 3 # change to skip frames
         frame_count = 0
-        timeCount = 0
 
         while cap.isOpened():
             ret, frame = cap.read()  # Read a frame from the video
             
             if not ret:
                 break  # Exit loop if there are no frames left
+
+            timeElapsed = round(cap.get(cv.CAP_PROP_POS_MSEC)/1000, 2)
+
+            #print status
+            if frame_skip != 0 and frame_count % 30 == 0:
+               
+                print("analyzing:" + " " + whole_path + " " + str(timeElapsed) + "sec")
+
 
             # Skip frames
             if frame_skip != 0 and frame_count % frame_skip != 0:
@@ -57,30 +64,24 @@ def analyze_video (whole_path, resultsArr, checkArr, filename, creation_time):
             # Make predictions on the current frame
             #results = model.predict(source=frame)
             alpr_results = alpr.predict(frame)
-            timeElapsed = round(cap.get(cv.CAP_PROP_POS_MSEC)/1000, 2)
-            timeCount = timeCount + 1
-
-            if timeCount == 0:
-                timeCount = 0
-                print("analyzing:" + " " + whole_path + " " + str(timeElapsed) + "sec")
             
             #print(alpr_results)
             if len(alpr_results) !=0:
                 
-                print(alpr_results[0].ocr.text, alpr_results[0].ocr.confidence)
-                print(timeElapsed)
+                #print(alpr_results[0].ocr.text, alpr_results[0].ocr.confidence)
+                #print(timeElapsed)
                 
             
                 # loop through results and add to the dictionary
                 
                 for x in alpr_results:
-                    if x.ocr.text not in checkArr and x.ocr.confidence >= 0.97:
+                    if x.ocr.text not in checkArr and x.ocr.confidence >= 0.9:
                        
                         data = {
                         "plate_number": x.ocr.text,
                         "confidence": round(x.ocr.confidence, 3),
                         "video_time": timeElapsed,
-                        "file_name": filename,
+                        "file_name": whole_path,
                         "creation_time": creation_time
                         }
                         resultsArr.append(data)
