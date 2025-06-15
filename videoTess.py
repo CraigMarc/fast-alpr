@@ -90,9 +90,11 @@ while cap.isOpened():
         break  # Exit loop if there are no frames left
 
     # Skip frames
-    if frame_count % frame_skip != 0:
+    if frame_skip != 0 and frame_count % frame_skip != 0:
         frame_count += 1
         continue  # Skip processing this frame
+
+    frame_count +=1
 
     # Resize the frame (optional, adjust size as needed)
     frame = cv.resize(frame, (640, 480))  # Resize to 640x480

@@ -32,7 +32,7 @@ def analyze_video (whole_path, resultsArr, checkArr, filename, creation_time):
         video_width = int(cap.get(cv.CAP_PROP_FRAME_WIDTH))
 
         # Frame skipping factor (adjust as needed for performance)
-        frame_skip = 0 # Skip every 3rd frame
+        frame_skip = 0 # change to skip frames
         frame_count = 0
         timeCount = 0
 
@@ -48,6 +48,7 @@ def analyze_video (whole_path, resultsArr, checkArr, filename, creation_time):
                 continue  # Skip processing this frame
             
             frame_count += 1
+            
 
             # Resize the frame (optional, adjust size as needed)
             #frame = cv.resize(frame, (1280, 720))  # Resize to improve accuracy *****************

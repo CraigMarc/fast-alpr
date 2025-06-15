@@ -46,9 +46,11 @@ while cap.isOpened():
 
     # Skip frames
     
-    if frame_count % frame_skip != 0:
+    if frame_skip != 0 and frame_count % frame_skip != 0:
         frame_count += 1
         continue  # Skip processing this frame
+
+    frame_skip +=1
         
     # Resize the frame (optional, adjust size as needed)
     frame = cv.resize(frame, (1366, 768))  # Resize to improve accuracy ******************

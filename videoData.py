@@ -63,7 +63,7 @@ print(video_height)
 print(video_width)
 
 # Frame skipping factor (adjust as needed for performance)
-frame_skip = 0  # Skip every 3rd frame
+frame_skip = 3  # Skip every 3rd frame
 frame_count = 0
 
 while cap.isOpened():
@@ -74,10 +74,11 @@ while cap.isOpened():
     # Skip frames
     if frame_skip != 0 and frame_count % frame_skip != 0:
         frame_count = frame_count + 1
+       
         continue  # Skip processing this frame
 
     frame_count = frame_count + 1
-    
+  
 
     # Resize the frame (optional, adjust size as needed)
     #frame = cv.resize(frame, (1366, 768))  # Resize to improve accuracy *****************
