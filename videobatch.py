@@ -65,7 +65,7 @@ for val in sub_directories:
         video_width = int(cap.get(cv.CAP_PROP_FRAME_WIDTH))
 
         # Frame skipping factor (adjust as needed for performance)
-        frame_skip = 3  # Skip every 3rd frame
+        frame_skip = 0  # Skip every 3rd frame
         frame_count = 0
         timeCount = 0
 
@@ -76,9 +76,10 @@ for val in sub_directories:
                 break  # Exit loop if there are no frames left
 
             # Skip frames
-            if frame_count % frame_skip != 0:
+            if frame_skip != 0 and frame_count % frame_skip != 0:
                 frame_count += 1
                 continue  # Skip processing this frame
+            frame_count += 1
 
             # Resize the frame (optional, adjust size as needed)
             #frame = cv.resize(frame, (1366, 768))  # Resize to improve accuracy *****************
@@ -97,8 +98,8 @@ for val in sub_directories:
             #print(alpr_results)
             if len(alpr_results) !=0:
                 
-                #print(alpr_results[0].ocr.text, alpr_results[0].ocr.confidence)
-                #print(timeElapsed)
+                print(alpr_results[0].ocr.text, alpr_results[0].ocr.confidence)
+                print(timeElapsed)
                 
             
                 # loop through results and add to the dictionary

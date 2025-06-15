@@ -10,7 +10,7 @@ import time
 if len(sys.argv) > 1:
     directory = sys.argv[1]
 else: 
-    directory = r"C:\Users\Criag\Videos\dashcam_data\batch1a\DCIM"
+    directory = r"C:\Users\Criag\Videos\dashcam_data\testbatch\DCIM"
 
 
 # You can also initialize the ALPR with custom plate detection and OCR models.
@@ -32,7 +32,7 @@ def analyze_video (whole_path, resultsArr, checkArr, filename, creation_time):
         video_width = int(cap.get(cv.CAP_PROP_FRAME_WIDTH))
 
         # Frame skipping factor (adjust as needed for performance)
-        frame_skip = 3  # Skip every 3rd frame
+        frame_skip = 0 # Skip every 3rd frame
         frame_count = 0
         timeCount = 0
 
@@ -43,9 +43,11 @@ def analyze_video (whole_path, resultsArr, checkArr, filename, creation_time):
                 break  # Exit loop if there are no frames left
 
             # Skip frames
-            if frame_count % frame_skip != 0:
+            if frame_skip != 0 and frame_count % frame_skip != 0:
                 frame_count += 1
                 continue  # Skip processing this frame
+            
+            frame_count += 1
 
             # Resize the frame (optional, adjust size as needed)
             #frame = cv.resize(frame, (1280, 720))  # Resize to improve accuracy *****************
@@ -57,15 +59,15 @@ def analyze_video (whole_path, resultsArr, checkArr, filename, creation_time):
             timeElapsed = round(cap.get(cv.CAP_PROP_POS_MSEC)/1000, 2)
             timeCount = timeCount + 1
 
-            if timeCount == 30:
+            if timeCount == 0:
                 timeCount = 0
                 print("analyzing:" + " " + whole_path + " " + str(timeElapsed) + "sec")
             
             #print(alpr_results)
             if len(alpr_results) !=0:
                 
-                #print(alpr_results[0].ocr.text, alpr_results[0].ocr.confidence)
-                #print(timeElapsed)
+                print(alpr_results[0].ocr.text, alpr_results[0].ocr.confidence)
+                print(timeElapsed)
                 
             
                 # loop through results and add to the dictionary

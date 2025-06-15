@@ -16,7 +16,7 @@ checkArr = []
 if len(sys.argv) > 1:
     file_name = sys.argv[1]
 else: 
-    file_name = 'data/dash1.mp4'
+    file_name = 'data/real2.avi'
 
 # get video creation time
 
@@ -63,18 +63,21 @@ print(video_height)
 print(video_width)
 
 # Frame skipping factor (adjust as needed for performance)
-frame_skip = 3  # Skip every 3rd frame
+frame_skip = 0  # Skip every 3rd frame
 frame_count = 0
 
 while cap.isOpened():
     ret, frame = cap.read()  # Read a frame from the video
     if not ret:
         break  # Exit loop if there are no frames left
-
+   
     # Skip frames
-    if frame_count % frame_skip != 0:
-        frame_count += 1
+    if frame_skip != 0 and frame_count % frame_skip != 0:
+        frame_count = frame_count + 1
         continue  # Skip processing this frame
+
+    frame_count = frame_count + 1
+    
 
     # Resize the frame (optional, adjust size as needed)
     #frame = cv.resize(frame, (1366, 768))  # Resize to improve accuracy *****************
