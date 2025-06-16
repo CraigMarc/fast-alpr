@@ -77,7 +77,7 @@ def analyze_video (whole_path, resultsArr, checkArr, filename, creation_time):
                 for x in alpr_results:
                     if x.ocr.text not in checkArr and x.ocr.confidence >= 0.9:
                         #jpg_filename = "jpeg/" + filename[:-4] + str(frame_count) + ".jpg"
-                        jpg_filename = "C:/Users/Criag/Videos/jpeg_files/" + filename[:-4] + str(frame_count) + ".jpg"
+                        jpg_filename = "C:/Users/Criag/Videos/jpeg_files/" + x.ocr.text + "_fc" + str(frame_count) + ".jpg"
                         cv.imwrite(jpg_filename, frame)     # save frame as JPEG file    
                         data = {
                         "plate_number": x.ocr.text,
