@@ -93,9 +93,9 @@ def analyze_video (whole_path, filename, creation_time):
                    #if new plate add data to list
 
                     if x.ocr.text not in checkArr and x.ocr.confidence >= 0.97:
-                        # save image fram to file later only save the image and data with the highest confidence ********
+                        
                         #jpg_filename = "jpeg/" + filename[:-4] + str(frame_count) + ".jpg"
-                        jpg_filename = "C:/Users/Criag/Videos/jpeg_files/" + x.ocr.text + "_fc" + str(frame_count) + ".jpg"
+                        jpg_filename = "C:/Users/Criag/Videos/jpeg_files/" + x.ocr.text + "_c" + str(int(x.ocr.confidence * 100000)) + "_fn" + filename + ".jpg"
                         cv.imwrite(jpg_filename, frame)     # save frame as JPEG file    
                         data = {
                         "plate_number": x.ocr.text,
