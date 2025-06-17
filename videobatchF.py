@@ -20,15 +20,74 @@ alpr = ALPR(
     ocr_model="global-plates-mobile-vit-v2-model",
 )
 
+def get_creation_time (whole_path):
+    # get creation time of video file
+
+        ti_m = os.path.getmtime(whole_path)
+
+        # Converting the time in seconds to a timestamp
+
+        creation_time = time.ctime(ti_m)
+
+       
+# function to add new plate
+
+def add_new_plate (x, checkArr, filename, frame, timeElapsed, whole_path, resultsArr, imgArr):
+
+    creation_time = get_creation_time(whole_path)
+
+    if x.ocr.text not in checkArr and x.ocr.confidence >= 0.9:
+                        
+        #jpg_filename = "jpeg/" + filename[:-4] + str(frame_count) + ".jpg"
+        jpg_filename = "C:/Users/Criag/Videos/jpeg_files/" + x.ocr.text + "_c" + str(int(x.ocr.confidence * 100000)) + "_fn" + filename + ".jpg"
+        cv.imwrite(jpg_filename, frame)     # save frame as JPEG file    
+        data = {
+        "plate_number": x.ocr.text,
+        "confidence": round(x.ocr.confidence, 3),
+        "video_time": timeElapsed,
+        "file_name": whole_path,
+        "creation_time": creation_time
+        }
+        resultsArr.append(data)
+
+        chkData = {
+        "plate_number": x.ocr.text,
+        "confidence": x.ocr.confidence
+        }
+        
+        imgArr.append(chkData)
+                
+        checkArr.append(x.ocr.text)
+
+# function to find best image
+
+def best_image (filename, frame, imgArr, x):
+    for iter in imgArr:
+        if iter["plate_number"] == x.ocr.text and iter["confidence"] < x.ocr.confidence:
+                    
+            iter["confidence"] = x.ocr.confidence
+            jpg_filenameNew = "C:/Users/Criag/Videos/jpeg_best/" + x.ocr.text + "_fn" + filename + ".jpg"
+            cv.imwrite(jpg_filenameNew, frame)     # save frame as JPEG file
+
+#save to csv file
+
+def save_to_file(resultsArr):
+    # change a to w to start new file a to append to end of current file
+    with open('spreadsheet_batchf.csv', 'a', newline='') as csvfile:
+        fieldnames = ['plate_number', 'confidence', 'video_time', 'file_name', 'creation_time']
+        writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+        #unquote for headers to be written
+        #writer.writeheader()
+        writer.writerows(resultsArr)  
+
+                        
 #function to analyze video
 
-def analyze_video (whole_path, filename, creation_time):
+def analyze_video (whole_path, filename):
         
         resultsArr = []
         checkArr = []
         imgArr= []
-
-    ### get to work with video files
         
         # Open the video file (replace with your video file path)
         video_path = whole_path
@@ -76,46 +135,17 @@ def analyze_video (whole_path, filename, creation_time):
                 #print(alpr_results[0].ocr.text, alpr_results[0].ocr.confidence)
                 #print(timeElapsed)
 
-                 
-            
                 # loop through results and add to the dictionary
                 
                 for x in alpr_results:
 
                     # save the image with the highest confidence for each plate
-                    for iter in imgArr:
-                        if iter["plate_number"] == x.ocr.text and iter["confidence"] < x.ocr.confidence:
+
+                    best_image(filename, frame, imgArr, x)
                     
-                            iter["confidence"] = x.ocr.confidence
-                            jpg_filenameNew = "C:/Users/Criag/Videos/jpeg_best/" + x.ocr.text + "_fn" + filename + ".jpg"
-                            cv.imwrite(jpg_filenameNew, frame)     # save frame as JPEG file
-
                    #if new plate add data to list
-
-                    if x.ocr.text not in checkArr and x.ocr.confidence >= 0.9:
-                        
-                        #jpg_filename = "jpeg/" + filename[:-4] + str(frame_count) + ".jpg"
-                        jpg_filename = "C:/Users/Criag/Videos/jpeg_files/" + x.ocr.text + "_c" + str(int(x.ocr.confidence * 100000)) + "_fn" + filename + ".jpg"
-                        cv.imwrite(jpg_filename, frame)     # save frame as JPEG file    
-                        data = {
-                        "plate_number": x.ocr.text,
-                        "confidence": round(x.ocr.confidence, 3),
-                        "video_time": timeElapsed,
-                        "file_name": whole_path,
-                        "creation_time": creation_time
-                        }
-                        resultsArr.append(data)
-
-                        chkData = {
-                        "plate_number": x.ocr.text,
-                        "confidence": x.ocr.confidence
-                        }
-        
-                        imgArr.append(chkData)
-                
-                        checkArr.append(x.ocr.text)
-                
-
+                    add_new_plate(x, checkArr, filename, frame, timeElapsed, whole_path, resultsArr, imgArr)
+                    
             # Show the frame with detections (show while video progresses)
             """
             cv.imshow('Detections', frame)
@@ -135,19 +165,15 @@ def analyze_video (whole_path, filename, creation_time):
         print(resultsArr)
 
         #save data to a csv file
-        # change a to w to start new file a to append to end of current file
-        with open('spreadsheet_batchf.csv', 'a', newline='') as csvfile:
-            fieldnames = ['plate_number', 'confidence', 'video_time', 'file_name', 'creation_time']
-            writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
-            #unquote for headers to be written
-            #writer.writeheader()
-            writer.writerows(resultsArr)
+        save_to_file(resultsArr)
+        
             # Release resources
 
         cap.release()
         #out.release()  # Release the VideoWriter object if used
         cv.destroyAllWindows()
-            
+
+ 
 
 # function to get subdirectories
 
@@ -174,17 +200,10 @@ def get_files():
             whole_path = directory_2 + "\\" + filename
             print(whole_path)
 
-            # get creation time of video file
-
-            ti_m = os.path.getmtime(whole_path)
-
-            # Converting the time in seconds to a timestamp
-
-            creation_time = time.ctime(ti_m)
-
             #call analysis function for each file
-            analyze_video(whole_path, filename, creation_time)
+            analyze_video(whole_path, filename)
 
+            
 # call get files to start analysis
 get_files()
        
