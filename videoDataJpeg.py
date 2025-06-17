@@ -100,10 +100,6 @@ while cap.isOpened():
         # loop through results and add to the dictionary
         
         for x in alpr_results:
-
-            checkPlate = "false"
-            checkConfidence = "false"
-
             
             # save the image with the highest confidence for each plate
             for iter in imgArr:

@@ -22,7 +22,12 @@ alpr = ALPR(
 
 #function to analyze video
 
-def analyze_video (whole_path, resultsArr, checkArr, filename, creation_time):
+def analyze_video (whole_path, filename, creation_time):
+        
+        resultsArr = []
+        checkArr = []
+        imgArr= []
+
     ### get to work with video files
         
         # Open the video file (replace with your video file path)
@@ -77,14 +82,17 @@ def analyze_video (whole_path, resultsArr, checkArr, filename, creation_time):
                 
                 for x in alpr_results:
 
-                    # save all images over 95% *** get rid of after collect training images *************
+                    # save the image with the highest confidence for each plate
+                    for iter in imgArr:
+                        if iter["plate_number"] == x.ocr.text and iter["confidence"] < x.ocr.confidence:
                     
-                    if x.ocr.confidence >= 0.95:
-                        jpg_filename2 = "C:/Users/Criag/Videos/jpeg_files/" + x.ocr.text + "__fc" + str(frame_count) + ".jpg"
-                        cv.imwrite(jpg_filename2, frame)     # save frame as JPEG file   
+                            iter["confidence"] = x.ocr.confidence
+                            jpg_filenameNew = "C:/Users/Criag/Videos/jpeg_files/" + x.ocr.text + "_fn" + filename + ".jpg"
+                            cv.imwrite(jpg_filenameNew, frame)     # save frame as JPEG file
 
+                   #if new plate add data to list
 
-                    if x.ocr.text not in checkArr and x.ocr.confidence >= 0.9:
+                    if x.ocr.text not in checkArr and x.ocr.confidence >= 0.97:
                         # save image fram to file later only save the image and data with the highest confidence ********
                         #jpg_filename = "jpeg/" + filename[:-4] + str(frame_count) + ".jpg"
                         jpg_filename = "C:/Users/Criag/Videos/jpeg_files/" + x.ocr.text + "_fc" + str(frame_count) + ".jpg"
@@ -97,6 +105,13 @@ def analyze_video (whole_path, resultsArr, checkArr, filename, creation_time):
                         "creation_time": creation_time
                         }
                         resultsArr.append(data)
+
+                        chkData = {
+                        "plate_number": x.ocr.text,
+                        "confidence": x.ocr.confidence
+                        }
+        
+                        imgArr.append(chkData)
                 
                         checkArr.append(x.ocr.text)
                 
@@ -159,9 +174,6 @@ def get_files():
             whole_path = directory_2 + "\\" + filename
             print(whole_path)
 
-            resultsArr = []
-            checkArr = []
-
             # get creation time of video file
 
             ti_m = os.path.getmtime(whole_path)
@@ -171,7 +183,7 @@ def get_files():
             creation_time = time.ctime(ti_m)
 
             #call analysis function for each file
-            analyze_video(whole_path, resultsArr, checkArr, filename, creation_time)
+            analyze_video(whole_path, filename, creation_time)
 
 # call get files to start analysis
 get_files()
