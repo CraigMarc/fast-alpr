@@ -9,6 +9,7 @@ import time
 
 resultsArr = []
 checkArr = []
+imgArr= []
 
 
 #get file name from command line
@@ -62,13 +63,9 @@ video_width = int(cap.get(cv.CAP_PROP_FRAME_WIDTH))
 print(video_height)
 print(video_width)
 
-
 # Frame skipping factor (adjust as needed for performance)
 frame_skip = 3  # Skip every 3rd frame
 frame_count = 0
-
-
-
 
 while cap.isOpened():
     ret, frame = cap.read()  # Read a frame from the video
@@ -103,9 +100,25 @@ while cap.isOpened():
         # loop through results and add to the dictionary
         
         for x in alpr_results:
+
+            checkPlate = "false"
+            checkConfidence = "false"
+
+            
+            # save the image with the highest confidence for each plate
+            for iter in imgArr:
+                if iter["plate_number"] == x.ocr.text and iter["confidence"] < x.ocr.confidence:
+                
+                    iter["confidence"] = x.ocr.confidence
+                    jpg_filenameNew = "jpeg/" + x.ocr.text  + ".jpg"
+                    cv.imwrite(jpg_filenameNew, frame)     # save frame as JPEG file
+           
+
             if x.ocr.text not in checkArr and x.ocr.confidence >= 0.97:
-                jpg_filename = "jpeg/" + file_name[5:-4] + str(frame_count) + ".jpg"
-                cv.imwrite(jpg_filename, frame)     # save frame as JPEG file    
+                # save image fram to file later only save the image and data with the highest confidence ********
+                #jpg_filename = "jpeg/" + filename[:-4] + str(frame_count) + ".jpg"
+                jpg_filename = "jpeg/" + x.ocr.text + "_c" + str(int(x.ocr.confidence * 100000)) + ".jpg"
+                cv.imwrite(jpg_filename, frame)     # save frame as JPEG file
                 data = {
                 "plate_number": x.ocr.text,
                 "confidence": round(x.ocr.confidence, 3),
@@ -114,8 +127,16 @@ while cap.isOpened():
                 "creation_time": creation_time
                 }
                 resultsArr.append(data)
+
+                chkData = {
+                "plate_number": x.ocr.text,
+                "confidence": x.ocr.confidence
+                }
         
+                imgArr.append(chkData)
                 checkArr.append(x.ocr.text)
+
+        
         
         # one result per frame
         """

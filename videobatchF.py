@@ -70,12 +70,22 @@ def analyze_video (whole_path, resultsArr, checkArr, filename, creation_time):
                 
                 #print(alpr_results[0].ocr.text, alpr_results[0].ocr.confidence)
                 #print(timeElapsed)
-                
+
+                 
             
                 # loop through results and add to the dictionary
                 
                 for x in alpr_results:
+
+                    # save all images over 95% *** get rid of after collect training images *************
+                    
+                    if x.ocr.confidence >= 0.95:
+                        jpg_filename2 = "C:/Users/Criag/Videos/jpeg_files/" + x.ocr.text + "__fc" + str(frame_count) + ".jpg"
+                        cv.imwrite(jpg_filename2, frame)     # save frame as JPEG file   
+
+
                     if x.ocr.text not in checkArr and x.ocr.confidence >= 0.9:
+                        # save image fram to file later only save the image and data with the highest confidence ********
                         #jpg_filename = "jpeg/" + filename[:-4] + str(frame_count) + ".jpg"
                         jpg_filename = "C:/Users/Criag/Videos/jpeg_files/" + x.ocr.text + "_fc" + str(frame_count) + ".jpg"
                         cv.imwrite(jpg_filename, frame)     # save frame as JPEG file    
