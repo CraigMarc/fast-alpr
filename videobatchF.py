@@ -28,14 +28,14 @@ def get_creation_time (whole_path):
         # Converting the time in seconds to a timestamp
 
         creation_time = time.ctime(ti_m)
-
+        return creation_time
        
 # function to add new plate
 
 def add_new_plate (x, checkArr, filename, frame, timeElapsed, whole_path, resultsArr, imgArr):
 
     creation_time = get_creation_time(whole_path)
-
+   
     if x.ocr.text not in checkArr and x.ocr.confidence >= 0.9:
                         
         #jpg_filename = "jpeg/" + filename[:-4] + str(frame_count) + ".jpg"
