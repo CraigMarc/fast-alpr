@@ -41,8 +41,11 @@ def add_new_plate (x, checkArr, filename, frame, timeElapsed, whole_path, result
     if x.ocr.text not in checkArr and x.ocr.confidence >= 0.97:
         # other files may save later ???????????????????   
         #jpg_filename = "jpeg/" + filename[:-4] + str(frame_count) + ".jpg"
-        jpg_filename = "C:/Users/Criag/Videos/jpeg_files/" + x.ocr.text + "_c" + str(int(x.ocr.confidence * 100000)) + "_fn" + filename + ".jpg"
-        cv.imwrite(jpg_filename, frame)     # save frame as JPEG file  
+        #jpg_filename = "C:/Users/Criag/Videos/jpeg_files/" + x.ocr.text + "_c" + str(int(x.ocr.confidence * 100000)) + "_fn" + filename + ".jpg"
+        #cv.imwrite(jpg_filename, frame)     # save frame as JPEG file 
+        #print(x.ocr.text)
+        #print(x.ocr.confidence) 
+        #print("new********************************")
         jpg_filenameNew = "C:/Users/Criag/Videos/jpeg_best/" + x.ocr.text + "_fn" + filename + ".jpg"
         cv.imwrite(jpg_filenameNew, frame)     # save frame as JPEG file
         data = {
@@ -63,15 +66,13 @@ def add_new_plate (x, checkArr, filename, frame, timeElapsed, whole_path, result
             
         checkArr.append(x.ocr.text)
 
-# *******(might not be saving the first image if only one plate image)**********************************************
-#function to find the best image for each plate (its not saving the first image fix it also make sure it is getting the best) ********
 def best_image (filename, frame, imgArr, x):
    
     for iter in imgArr:
         if iter["plate_number"] == x.ocr.text and iter["confidence"] < x.ocr.confidence:
             #print(x.ocr.text)
             #print(x.ocr.confidence) 
-            #print("********************************")     
+            #print("best********************************")     
             iter["confidence"] = x.ocr.confidence
             jpg_filenameNew = "C:/Users/Criag/Videos/jpeg_best/" + x.ocr.text + "_fn" + filename + ".jpg"
             cv.imwrite(jpg_filenameNew, frame)     # save frame as JPEG file
