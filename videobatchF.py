@@ -12,7 +12,7 @@ import time
 if len(sys.argv) > 1:
     directory = sys.argv[1]
 else: 
-    directory = r"C:\Users\Criag\Videos\dashcam_data\testbatch2\DCIM"
+    directory = r"C:\fast_alpr\dashcam_data\testbatch2\DCIM"
 
 
 # You can also initialize the ALPR with custom plate detection and OCR models.
@@ -38,15 +38,21 @@ def add_new_plate (x, checkArr, filename, frame, timeElapsed, whole_path, result
 
     creation_time = get_creation_time(whole_path)
    
-    if x.ocr.text not in checkArr and x.ocr.confidence >= 0.97:
+    if x.ocr.text not in checkArr and x.ocr.confidence >= 0.95:
         # other files may save later ???????????????????   
         #jpg_filename = "jpeg/" + filename[:-4] + str(frame_count) + ".jpg"
         #jpg_filename = "C:/Users/Criag/Videos/jpeg_files/" + x.ocr.text + "_c" + str(int(x.ocr.confidence * 100000)) + "_fn" + filename + ".jpg"
         #cv.imwrite(jpg_filename, frame)     # save frame as JPEG file 
-        #print(x.ocr.text)
-        #print(x.ocr.confidence) 
-        #print("new********************************")
-        jpg_filenameNew = "C:/Users/Criag/Videos/jpeg_best/" + x.ocr.text + "_fn" + filename + ".jpg"
+        
+
+        # save first plate image to jpeg_best folder
+
+        #create folder if it does not exist
+
+        if not os.path.exists("C:/fast_alpr/jpeg_best/"):
+            os.makedirs("C:/fast_alpr/jpeg_best/")
+
+        jpg_filenameNew = "C:/fast_alpr/jpeg_best/" + x.ocr.text + "_fn" + filename + ".jpg"
         cv.imwrite(jpg_filenameNew, frame)     # save frame as JPEG file
         data = {
         "plate_number": x.ocr.text,
@@ -70,11 +76,9 @@ def best_image (filename, frame, imgArr, x):
    
     for iter in imgArr:
         if iter["plate_number"] == x.ocr.text and iter["confidence"] < x.ocr.confidence:
-            #print(x.ocr.text)
-            #print(x.ocr.confidence) 
-            #print("best********************************")     
+
             iter["confidence"] = x.ocr.confidence
-            jpg_filenameNew = "C:/Users/Criag/Videos/jpeg_best/" + x.ocr.text + "_fn" + filename + ".jpg"
+            jpg_filenameNew = "C:/fast_alpr/jpeg_best/" + x.ocr.text + "_fn" + filename + ".jpg"
             cv.imwrite(jpg_filenameNew, frame)     # save frame as JPEG file
 
 #save to csv file
@@ -140,8 +144,6 @@ def analyze_video (whole_path, filename):
             #print(alpr_results)
             if len(alpr_results) !=0:
                 
-                #print(alpr_results[0].ocr.text, alpr_results[0].ocr.confidence)
-                #print(timeElapsed)
 
                 # loop through results and add to the dictionary
                 
