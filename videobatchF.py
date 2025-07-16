@@ -1,3 +1,5 @@
+#video batchf same as video batch expect the code is split up into more functions can eventually delete video batch
+
 import cv2 as cv
 from fast_alpr import ALPR
 import sys
@@ -36,11 +38,13 @@ def add_new_plate (x, checkArr, filename, frame, timeElapsed, whole_path, result
 
     creation_time = get_creation_time(whole_path)
    
-    if x.ocr.text not in checkArr and x.ocr.confidence >= 0.9:
-                        
+    if x.ocr.text not in checkArr and x.ocr.confidence >= 0.97:
+        # other files may save later ???????????????????   
         #jpg_filename = "jpeg/" + filename[:-4] + str(frame_count) + ".jpg"
         jpg_filename = "C:/Users/Criag/Videos/jpeg_files/" + x.ocr.text + "_c" + str(int(x.ocr.confidence * 100000)) + "_fn" + filename + ".jpg"
-        cv.imwrite(jpg_filename, frame)     # save frame as JPEG file    
+        cv.imwrite(jpg_filename, frame)     # save frame as JPEG file  
+        jpg_filenameNew = "C:/Users/Criag/Videos/jpeg_best/" + x.ocr.text + "_fn" + filename + ".jpg"
+        cv.imwrite(jpg_filenameNew, frame)     # save frame as JPEG file
         data = {
         "plate_number": x.ocr.text,
         "confidence": round(x.ocr.confidence, 3),
@@ -56,15 +60,18 @@ def add_new_plate (x, checkArr, filename, frame, timeElapsed, whole_path, result
         }
         
         imgArr.append(chkData)
-                
+            
         checkArr.append(x.ocr.text)
 
-# function to find best image
-
+# *******(might not be saving the first image if only one plate image)**********************************************
+#function to find the best image for each plate (its not saving the first image fix it also make sure it is getting the best) ********
 def best_image (filename, frame, imgArr, x):
+   
     for iter in imgArr:
         if iter["plate_number"] == x.ocr.text and iter["confidence"] < x.ocr.confidence:
-                    
+            #print(x.ocr.text)
+            #print(x.ocr.confidence) 
+            #print("********************************")     
             iter["confidence"] = x.ocr.confidence
             jpg_filenameNew = "C:/Users/Criag/Videos/jpeg_best/" + x.ocr.text + "_fn" + filename + ".jpg"
             cv.imwrite(jpg_filenameNew, frame)     # save frame as JPEG file
@@ -138,13 +145,12 @@ def analyze_video (whole_path, filename):
                 # loop through results and add to the dictionary
                 
                 for x in alpr_results:
-
-                    # save the image with the highest confidence for each plate
-
-                    best_image(filename, frame, imgArr, x)
-                    
                    #if new plate add data to list
                     add_new_plate(x, checkArr, filename, frame, timeElapsed, whole_path, resultsArr, imgArr)
+
+                    # save the image with the highest confidence for each plate
+                    
+                    best_image(filename, frame, imgArr, x)
                     
             # Show the frame with detections (show while video progresses)
             """
