@@ -12,7 +12,7 @@ import time
 if len(sys.argv) > 1:
     directory = sys.argv[1]
 else: 
-    directory = r"C:\fast_alpr\dashcam_data\testbatch2\DCIM"
+    directory = r"C:\fast_alpr\dashcam_data\testbatch3\DCIM"
 
 
 # You can also initialize the ALPR with custom plate detection and OCR models.
@@ -51,9 +51,12 @@ def add_new_plate (x, checkArr, filename, frame, timeElapsed, whole_path, result
 
         if not os.path.exists("C:/fast_alpr/jpeg_best/"):
             os.makedirs("C:/fast_alpr/jpeg_best/")
+        
+        #save first occurance of plate to file
+        jpg_filenameFirst = "C:/fast_alpr/jpeg_best/" + x.ocr.text + "_fn" + filename + ".jpg"
+        cv.imwrite(jpg_filenameFirst, frame)     # save frame as JPEG file
 
-        jpg_filenameNew = "C:/fast_alpr/jpeg_best/" + x.ocr.text + "_fn" + filename + ".jpg"
-        cv.imwrite(jpg_filenameNew, frame)     # save frame as JPEG file
+        #add plate data to results array to save at end of video
         data = {
         "plate_number": x.ocr.text,
         "confidence": round(x.ocr.confidence, 3),
@@ -63,17 +66,20 @@ def add_new_plate (x, checkArr, filename, frame, timeElapsed, whole_path, result
         }
         resultsArr.append(data)
 
+        # add plate data an confidence to array so can be used to get best image 
         chkData = {
         "plate_number": x.ocr.text,
         "confidence": x.ocr.confidence
         }
         
         imgArr.append(chkData)
-            
+
+        # add plate number to array so dont have duplicate plate numbers    
         checkArr.append(x.ocr.text)
 
 def best_image (filename, frame, imgArr, x):
-   
+
+   #see if best plate number if it is save the nem image
     for iter in imgArr:
         if iter["plate_number"] == x.ocr.text and iter["confidence"] < x.ocr.confidence:
 
@@ -172,8 +178,8 @@ def analyze_video (whole_path, filename):
 
         print("results:")
         print(resultsArr)
-
-        #save data to a csv file
+        
+        # save results to csv file at the end of video
         save_to_file(resultsArr)
         
             # Release resources
