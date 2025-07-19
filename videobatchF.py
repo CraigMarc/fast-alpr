@@ -6,13 +6,13 @@ import sys
 import csv
 import os
 import time
-
+import datetime
 #get file name from command line
 
 if len(sys.argv) > 1:
     directory = sys.argv[1]
 else: 
-    directory = r"C:\fast_alpr\dashcam_data\testbatch3\DCIM"
+    directory = r"C:\fast_alpr\dashcam_data\test_multifile_dup\DCIM"
 
 
 # You can also initialize the ALPR with custom plate detection and OCR models.
@@ -26,19 +26,31 @@ def get_creation_time (whole_path):
     # get creation time of video file
 
         ti_m = os.path.getmtime(whole_path)
-
+        
         # Converting the time in seconds to a timestamp
-
         creation_time = time.ctime(ti_m)
         return creation_time
+
+# get date and month of file to name folder
+
+def get_folder_time (whole_path):
+
+    ti_m = os.path.getmtime(whole_path)
+    folder_time = datetime.datetime.fromtimestamp(ti_m)
+    folder_time_format = folder_time.strftime("%Y%m%d")
+    
+    return folder_time_format
        
 # function to add new plate
 
 def add_new_plate (x, checkArr, filename, frame, timeElapsed, whole_path, resultsArr, imgArr):
 
-    creation_time = get_creation_time(whole_path)
-   
+    
+    
     if x.ocr.text not in checkArr and x.ocr.confidence >= 0.95:
+
+        creation_time = get_creation_time(whole_path)
+        folder_time = get_folder_time(whole_path)
         # other files may save later ???????????????????   
         #jpg_filename = "jpeg/" + filename[:-4] + str(frame_count) + ".jpg"
         #jpg_filename = "C:/Users/Criag/Videos/jpeg_files/" + x.ocr.text + "_c" + str(int(x.ocr.confidence * 100000)) + "_fn" + filename + ".jpg"
@@ -46,14 +58,14 @@ def add_new_plate (x, checkArr, filename, frame, timeElapsed, whole_path, result
         
 
         # save first plate image to jpeg_best folder
-
+        
         #create folder if it does not exist
-
-        if not os.path.exists("C:/fast_alpr/jpeg_best/"):
-            os.makedirs("C:/fast_alpr/jpeg_best/")
+        print("detected:  " + "plate_number: " + x.ocr.text + " confidence: " + str(x.ocr.confidence))
+        if not os.path.exists("C:/fast_alpr/jpeg_best/" + folder_time + "/"):
+            os.makedirs("C:/fast_alpr/jpeg_best/" + folder_time + "/")
         
         #save first occurance of plate to file
-        jpg_filenameFirst = "C:/fast_alpr/jpeg_best/" + x.ocr.text + "_fn" + filename + ".jpg"
+        jpg_filenameFirst = "C:/fast_alpr/jpeg_best/" + folder_time + "/" + x.ocr.text + "_fn" + filename + ".jpg"
         cv.imwrite(jpg_filenameFirst, frame)     # save frame as JPEG file
 
         #add plate data to results array to save at end of video
@@ -77,14 +89,16 @@ def add_new_plate (x, checkArr, filename, frame, timeElapsed, whole_path, result
         # add plate number to array so dont have duplicate plate numbers    
         checkArr.append(x.ocr.text)
 
-def best_image (filename, frame, imgArr, x):
+def best_image (filename, frame, imgArr, x, whole_path):
 
    #see if best plate number if it is save the nem image
     for iter in imgArr:
         if iter["plate_number"] == x.ocr.text and iter["confidence"] < x.ocr.confidence:
 
+            folder_time = get_folder_time(whole_path)
+
             iter["confidence"] = x.ocr.confidence
-            jpg_filenameNew = "C:/fast_alpr/jpeg_best/" + x.ocr.text + "_fn" + filename + ".jpg"
+            jpg_filenameNew = "C:/fast_alpr/jpeg_best/" + folder_time + "/" + x.ocr.text + "_fn" + filename + ".jpg"
             cv.imwrite(jpg_filenameNew, frame)     # save frame as JPEG file
 
 #save to csv file
@@ -106,6 +120,7 @@ def analyze_video (whole_path, filename):
         resultsArr = []
         checkArr = []
         imgArr= []
+        
         
         # Open the video file (replace with your video file path)
         video_path = whole_path
@@ -159,7 +174,7 @@ def analyze_video (whole_path, filename):
 
                     # save the image with the highest confidence for each plate
                     
-                    best_image(filename, frame, imgArr, x)
+                    best_image(filename, frame, imgArr, x, whole_path)
                     
             # Show the frame with detections (show while video progresses)
             """
@@ -210,14 +225,16 @@ def get_files():
     for val in sub:
         directory_2 = directory + "\\" + val
         
+        #loop through files in directory
         for file in os.listdir(directory_2):
+
             filename = os.fsdecode(file)
             whole_path = directory_2 + "\\" + filename
             print(whole_path)
 
             #call analysis function for each file
             analyze_video(whole_path, filename)
-
+            
             
 # call get files to start analysis
 get_files()
