@@ -32,23 +32,18 @@ def check_files (directory, current_file, plate_number):
         if plate_number in file:
             
             compare_current = (current_file[0:8])
-            print(compare_current)
-            print("matched file")
-            
+         
             end_file = file[-16:]
             compare_matched = end_file[0:8]
            
             difference = int(compare_current) - int(compare_matched)
             
-            print(difference)
             if difference == 0:
-                print("false")
                 return "false"
             
             if difference < 30000 and difference != 0:
-                print("true")
                 return "true"
-    print("false")
+    
     return "false"
             
 
@@ -102,15 +97,17 @@ def add_new_plate (x, checkArr, filename, frame, timeElapsed, whole_path, result
             jpg_filenameFirst = "C:/fast_alpr/jpeg_best/" + folder_time + "/" + x.ocr.text + "_fn" + filename + ".jpg"
             cv.imwrite(jpg_filenameFirst, frame)     # save frame as JPEG file
 
-        #add plate data to results array to save at end of video
-        data = {
-        "plate_number": x.ocr.text,
-        "confidence": round(x.ocr.confidence, 3),
-        "video_time": timeElapsed,
-        "file_name": whole_path,
-        "creation_time": creation_time
-        }
-        resultsArr.append(data)
+            #add plate data to results array to save at end of video
+       
+            data = {
+            "plate_number": x.ocr.text,
+            "confidence": round(x.ocr.confidence, 3),
+            "video_time": timeElapsed,
+            "file_name": whole_path,
+            "creation_time": creation_time
+            }
+
+            resultsArr.append(data)
 
         # add plate data an confidence to array so can be used to get best image 
         chkData = {
@@ -140,13 +137,21 @@ def best_image (filename, frame, imgArr, x, whole_path):
 #save to csv file
 
 def save_to_file(resultsArr):
-    # change a to w to start new file a to append to end of current file
-    with open('spreadsheet_batchf.csv', 'a', newline='') as csvfile:
-        fieldnames = ['plate_number', 'confidence', 'video_time', 'file_name', 'creation_time']
-        writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
-        #unquote for headers to be written
-        #writer.writeheader()
-        writer.writerows(resultsArr)  
+    # if file does not exist create file with headers
+    if os.path.isfile("C:/fast_alpr/spreadsheet_batchf.csv") == False:
+        
+        with open('C:/fast_alpr/spreadsheet_batchf.csv', 'w', newline='') as csvfile:
+            fieldnames = ['plate_number', 'confidence', 'video_time', 'file_name', 'creation_time']
+            writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+            writer.writeheader()
+            writer.writerows(resultsArr) 
+    # if file exists append to current file
+    else:
+        
+        with open('C:/fast_alpr/spreadsheet_batchf.csv', 'a', newline='') as csvfile:
+            fieldnames = ['plate_number', 'confidence', 'video_time', 'file_name', 'creation_time']
+            writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+            writer.writerows(resultsArr)  
 
                         
 #function to analyze video
