@@ -26,7 +26,7 @@ alpr = ALPR(
 
 
 ### check if plate has been found in the last 3 minutes so dont save duplicates
-def check_files (directory, current_file, plate_number, current_creation_time):
+def check_files (directory, plate_number, current_creation_time):
 
     for file in os.listdir(directory):
 
@@ -91,7 +91,7 @@ def add_new_plate (x, checkArr, filename, frame, timeElapsed, whole_path, result
         if not os.path.exists("C:/fast_alpr/jpeg_best/" + folder_time + "/"):
             os.makedirs("C:/fast_alpr/jpeg_best/" + folder_time + "/")
 
-        file_check = check_files("C:/fast_alpr/jpeg_best/" + folder_time + "/", filename, x.ocr.text, creation_time_file)
+        file_check = check_files("C:/fast_alpr/jpeg_best/" + folder_time + "/", x.ocr.text, creation_time_file)
        
         #save first occurance of plate to file
         if file_check == False:
@@ -130,7 +130,7 @@ def best_image (filename, frame, imgArr, x, whole_path):
         if iter["plate_number"] == x.ocr.text and iter["confidence"] < x.ocr.confidence:
             print("detected:  " + "plate_number: " + x.ocr.text + " confidence: " + str(x.ocr.confidence))
             folder_time = get_folder_time(whole_path)
-            file_check = check_files("C:/fast_alpr/jpeg_best/" + folder_time + "/", filename, x.ocr.text, creation_time_file)
+            file_check = check_files("C:/fast_alpr/jpeg_best/" + folder_time + "/", x.ocr.text, creation_time_file)
             iter["confidence"] = x.ocr.confidence
 
             if file_check == False:
