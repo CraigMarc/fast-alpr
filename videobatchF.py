@@ -14,7 +14,7 @@ import datetime
 if len(sys.argv) > 1:
     directory = sys.argv[1]
 else: 
-    directory = r"C:\fast_alpr\dashcam_data\testbatch2\DCIM"
+    directory = r"C:\fast_alpr\dashcam_data\testNoDelete\DCIM"
 
 
 # You can also initialize the ALPR with custom plate detection and OCR models.
@@ -24,28 +24,28 @@ alpr = ALPR(
     ocr_model="global-plates-mobile-vit-v2-model",
 )
 
+
 ### check if plate has been found in the last 3 minutes so dont save duplicates
-def check_files (directory, current_file, plate_number):
-    
+def check_files (directory, current_file, plate_number, current_creation_time):
+
     for file in os.listdir(directory):
+
+        file_creation_time = file[-14:]
+        file_creation_time = file_creation_time[:-4:]
        
         if plate_number in file:
-            
-            compare_current = (current_file[0:8])
-         
-            end_file = file[-16:]
-            compare_matched = end_file[0:8]
            
-            difference = int(compare_current) - int(compare_matched)
-            
+            difference = current_creation_time - int(file_creation_time)
+            print(difference)
+            print("****************************************")
             if difference == 0:
-                return "false"
+                return False
             
-            if difference < 30000 and difference != 0:
-                return "true"
+            if difference < 180 and difference != 0:
+                return True
     
-    return "false"
-            
+    return False
+         
 
 # get creation time of video file
 
@@ -75,6 +75,7 @@ def add_new_plate (x, checkArr, filename, frame, timeElapsed, whole_path, result
     if x.ocr.text not in checkArr and x.ocr.confidence >= 0.95:
 
         creation_time = get_creation_time(whole_path)
+        creation_time_file = int(os.path.getmtime(whole_path))
         folder_time = get_folder_time(whole_path)
 
         # other files may save later ???????????????????   
@@ -90,11 +91,11 @@ def add_new_plate (x, checkArr, filename, frame, timeElapsed, whole_path, result
         if not os.path.exists("C:/fast_alpr/jpeg_best/" + folder_time + "/"):
             os.makedirs("C:/fast_alpr/jpeg_best/" + folder_time + "/")
 
-        file_check = check_files("C:/fast_alpr/jpeg_best/" + folder_time + "/", filename, x.ocr.text)
+        file_check = check_files("C:/fast_alpr/jpeg_best/" + folder_time + "/", filename, x.ocr.text, creation_time_file)
        
         #save first occurance of plate to file
-        if file_check == "false":
-            jpg_filenameFirst = "C:/fast_alpr/jpeg_best/" + folder_time + "/" + x.ocr.text + "_fn" + filename + ".jpg"
+        if file_check == False:
+            jpg_filenameFirst = "C:/fast_alpr/jpeg_best/" + folder_time + "/" + x.ocr.text + "_fn" + filename[:-4] + "_ct" + str(creation_time_file) + ".jpg"
             cv.imwrite(jpg_filenameFirst, frame)     # save frame as JPEG file
 
             #add plate data to results array to save at end of video
@@ -122,16 +123,18 @@ def add_new_plate (x, checkArr, filename, frame, timeElapsed, whole_path, result
 
 def best_image (filename, frame, imgArr, x, whole_path):
 
+    creation_time_file = int(os.path.getmtime(whole_path))
+
    #see if best plate number if it is save the nem image
     for iter in imgArr:
         if iter["plate_number"] == x.ocr.text and iter["confidence"] < x.ocr.confidence:
             print("detected:  " + "plate_number: " + x.ocr.text + " confidence: " + str(x.ocr.confidence))
             folder_time = get_folder_time(whole_path)
-            file_check = check_files("C:/fast_alpr/jpeg_best/" + folder_time + "/", filename, x.ocr.text)
+            file_check = check_files("C:/fast_alpr/jpeg_best/" + folder_time + "/", filename, x.ocr.text, creation_time_file)
             iter["confidence"] = x.ocr.confidence
 
-            if file_check == "false":
-                jpg_filenameNew = "C:/fast_alpr/jpeg_best/" + folder_time + "/" + x.ocr.text + "_fn" + filename + ".jpg"
+            if file_check == False:
+                jpg_filenameNew = "C:/fast_alpr/jpeg_best/" + folder_time + "/" + x.ocr.text + "_fn" + filename[:-4]  + "_ct" + str(creation_time_file) + ".jpg"
                 cv.imwrite(jpg_filenameNew, frame)     # save frame as JPEG file
 
 #save to csv file
